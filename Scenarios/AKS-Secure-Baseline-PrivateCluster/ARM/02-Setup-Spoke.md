@@ -8,6 +8,7 @@ In this section, we will be creating the spoke network and supporting resources:
 
 <br/>
 
+
 Before deploying the Azure resources from this folder, please ensure that all the resources are deployed as mentioned in the [Hub directory](https://github.com/Azure/Enterprise-Scale-for-AKS/tree/main/Scenarios/AKS-Secure-Baseline-Modular/ARM/Infrastructure-Deployment/Hub).
 For deploying an AKS cluster, the Spoke VNET should be having basic supporting infra components like Azure Key Vault, Azure Container Registry and Azure Application Gateway.
 
