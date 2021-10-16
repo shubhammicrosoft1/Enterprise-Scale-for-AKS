@@ -1,0 +1,66 @@
+name: ARM-Deployment-workflow
+on:
+  push:
+    branches:
+    - master
+    paths:
+     - 'workflows/main.yml'
+     - 'Scenarios/**'
+env:
+ "ApplicationId": "90aed5b0-3eca-4851-985c-e943212d8d83"
+ "PoolName": "ubuntu-latest"
+ "SubscriptionHub": "e78ba9ba-05ab-4501-a77f-b434ba74e2e5"     
+ "SubscriptionSpoke": "e78ba9ba-05ab-4501-a77f-b434ba74e2e5"
+ "TargetRegion": "eastus"
+ "Environment": "dev"
+ "resourcegroup": "aks-eslz01"
+ "rglocation": "eastus"
+
+jobs:
+ job:
+   name: 'Deploy to Dev'
+   runs-on: ubuntu-latest
+   defaults:
+      run:
+        shell: bash
+   steps:
+     - name: Azure Login
+       uses: Azure/login@v1
+       with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+     - name: Checkout
+       uses: actions/checkout@v2.3.4
+       with:
+        # Repository name with owner. For example, actions/checkout
+        repository: ${{ github.repository }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+     - name: "Invoke workflow "
+       if: ${{ github.head_ref != 'refs/heads/master' && github.event.workflow_run.event != 'pull_request' }}     
+       continue-on-error: false
+       uses: azure/CLI@v1
+       with:
+        inlineScript: |
+        az group create --name "${{ env.resourcegroup }}" --location "${{ env.rglocation }}"
+    - name: "Deploy_Hubvnet"
+     uses: Azure/arm-deploy@v1
+     with:
+       # Provide the scope of the deployment. Valid values are: 'resourcegroup', 'managementgroup', 'subscription'
+       scope: resourcegroup
+       # Override the Subscription Id set by Azure Login.
+       #subscriptionId: {{ env.SubscriptionHub }}
+       # Specify the Id for the Management Group, only required for Management Group Deployments.
+       #managementGroupId: # optional
+       # Provide the target region, only required for management Group or Subscription deployments.
+       region: eastus
+       # Provide the name of a resource group, only required for resource Group deployments.
+       resourceGroupName: aks_eslz01
+       # Specify the path or URL to the Azure Resource Manager template.
+       template: '/workspaces/Enterprise-Scale-for-AKS/Scenarios/AKS-Secure-Baseline-PrivateCluster/ARM/Infrastructure-Deployment/Hub/Templates/aks-eslz-la.template.json'
+       # Incremental (only add resources to resource group) or Complete (remove extra resources from resource group) or Validate (only validates the template).
+       #deploymentMode: # optional
+       # Specifies the name of the resource group deployment to create.
+       deploymentName: 'Deploy LA'
+       # Supply deployment parameter values.
+       parameters: '/workspaces/Enterprise-Scale-for-AKS/Scenarios/AKS-Secure-Baseline-PrivateCluster/ARM/Infrastructure-Deployment/Hub/Parameters/aks-eslz-la.parameters.json'
+
