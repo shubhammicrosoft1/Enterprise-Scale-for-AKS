@@ -4,7 +4,7 @@ on:
     branches:
     - master
     paths:
-     - 'Scenarios/**'
+     - 'Scenarios/AKS-Secure-Baseline-PrivateCluster/**'
 env:
  "ApplicationId": "90aed5b0-3eca-4851-985c-e943212d8d83"
  "PoolName": "ubuntu-latest"
