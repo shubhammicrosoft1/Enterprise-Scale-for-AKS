@@ -2,7 +2,7 @@ name: ARM-Deployment-workflow
 on:
   push:
     branches:
-    - master
+    - main
     paths:
      - 'Scenarios/AKS-Secure-Baseline-PrivateCluster/**'
      - '.github/workflows/*'
